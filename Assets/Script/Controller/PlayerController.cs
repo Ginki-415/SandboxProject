@@ -28,8 +28,8 @@ public class PlayerController : MonoBehaviour
     private void Rotate() 
     {
         //if (Input.GetKeyDown(lockMouseButton)) {
-        //    lockMouseFlag = !lockMouseFlag;
-        //    Cursor.visible = lockMouseFlag;
+        lockMouseFlag = !lockMouseFlag;
+        Cursor.visible = lockMouseFlag;
         //}
         //if (lockMouseFlag) 
         //{
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         //    }
 
 
-            if(Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow))
                 transform.Rotate(new Vector3(0, 0.1f* RotateSpeed, 0), Space.World);
             else if(Input.GetKey(KeyCode.LeftArrow))
                 transform.Rotate(new Vector3(0, -0.1f* RotateSpeed, 0), Space.World);
