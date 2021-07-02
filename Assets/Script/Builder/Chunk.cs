@@ -7,15 +7,16 @@ using UnityEngine;
 /// </summary>
 public class Section
 {
-    private static int length = 16;
-    public CubeType[,,] cube = new CubeType[length, length, length];
+    /// <summary>
+    /// 分区方块数据
+    /// </summary>
+    public CubeType[,,] cubes = new CubeType[Length, Length, Length];
+    public Dictionary<string, BaseCube> cubeDatas = new Dictionary<string, BaseCube>();
 
-    public static int Length 
-    {
-        get {
-            return length;
-        }
-    }
+    /// <summary>
+    /// 分区边长方块数
+    /// </summary>
+    public static int Length { get; } = 16;
 
     public Section() { }
 
@@ -23,16 +24,16 @@ public class Section
     {
         //实际的第一遍生成世界由分区的初始化进行完成
         //根据地平线与分区的位置关系进行三种不同的初始化
-        if (line == length)
+        if (line == Length)
         {
             //地平线不在分区内且高于分区
-            for (int y = 0; y < length; y++)
+            for (int y = 0; y < Length; y++)
             {
-                for (int x = 0; x < length; x++)
+                for (int x = 0; x < Length; x++)
                 {
-                    for (int z = 0; z < length; z++)
+                    for (int z = 0; z < Length; z++)
                     {
-                        cube[x, z, y] = CubeType.Stone;
+                        cubes[x, z, y] = CubeType.Stone;
                     }
                 }
             }
@@ -41,13 +42,13 @@ public class Section
         else if (line == 0) 
         {
             //地平线不在分区内且低于分区
-            for (int y = 0; y < length; y++)
+            for (int y = 0; y < Length; y++)
             {
-                for (int x = 0; x < length; x++)
+                for (int x = 0; x < Length; x++)
                 {
-                    for (int z = 0; z < length; z++)
+                    for (int z = 0; z < Length; z++)
                     {
-                        cube[x, z, y] = CubeType.Air;
+                        cubes[x, z, y] = CubeType.Air;
                     }
                 }
             }
@@ -55,36 +56,36 @@ public class Section
         }
         else{
             //地平线位于分区中
-            for (int y = 0; y < length; y++)
+            for (int y = 0; y < Length; y++)
             {
-                for (int x = 0; x < length; x++)
+                for (int x = 0; x < Length; x++)
                 {
-                    for (int z = 0; z < length; z++)
+                    for (int z = 0; z < Length; z++)
                     {
                         if (line - 3 > 0)
                         {
                             if (y <= line - 3)
                             {
-                                cube[x, y, z] = CubeType.Stone;
+                                cubes[x, y, z] = CubeType.Stone;
                             }
                             else if (y > line)
                             {
-                                cube[x, y, z] = CubeType.Air;
+                                cubes[x, y, z] = CubeType.Air;
                             }
                             else
                             {
-                                cube[x, y, z] = CubeType.Grass;
+                                cubes[x, y, z] = CubeType.Grass;
                             }
                         }
                         else 
                         {
                             if (y <= line)
                             {
-                                cube[x, y, z] = CubeType.Grass;
+                                cubes[x, y, z] = CubeType.Grass;
                             }
                             else 
                             {
-                                cube[x, y, z] = CubeType.Air;
+                                cubes[x, y, z] = CubeType.Air;
                             }
                         }
                     }
@@ -102,24 +103,18 @@ public class Section
 public class Chunk
 {
     /// <summary>
-    /// 区块中含有的分区数
-    /// </summary>
-    private static int height = 16;
-    /// <summary>
     /// 当前区块中分区的信息
     /// </summary>
-    public Section[] sectionsList = new Section[height];
+    public Section[] sectionsList = new Section[Height];
     /// <summary>
     /// 标记内容分区，true为非空分区，false为空分区
     /// </summary>
-    private bool[] activeList = new bool[height];
+    private bool[] activeList = new bool[Height];
 
-    public static int Height 
-    {
-        get {
-            return height;
-        }
-    }
+    /// <summary>
+    /// 一个区块中的分区数
+    /// </summary>
+    public static int Height { get; private set; } = 16;
 
     public bool[] ActiveList 
     {
@@ -131,7 +126,7 @@ public class Chunk
     public Chunk(int horizon)
     {
         //在第一遍的世界生成中区块只负责标记分区状态以及向分区传入地平线信息
-        for (int i = 0; i < height; i++)
+        for (int i = 0; i < Height; i++)
         {
             if ((i + 1) * Section.Length < horizon - Section.Length)
             {

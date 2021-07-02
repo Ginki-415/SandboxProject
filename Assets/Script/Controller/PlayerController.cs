@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// 转向速度
     /// </summary>
-    public float RotateSpeed = 2.0f;
+    public float RotateSpeed = 1.0f;
 
     private KeyCode lockMouseButton = KeyCode.Escape;
     private bool lockMouseFlag = true;
@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
             {
                 vertical *= RotateSpeed;
                 transform.Rotate(vertical, Space.Self);
+                //transform.rotation = Quaternion.Euler(Mathf.Clamp(transform.rotation.x, -90f, 90f), transform.rotation.y, 0);
             }
 
         }
