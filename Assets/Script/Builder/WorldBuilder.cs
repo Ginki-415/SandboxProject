@@ -39,6 +39,7 @@ public class WorldBuilder : Singleton<WorldBuilder>
     private void CheckVisible(Chunk chunk, int x, int y)
     {
         for (int n = 0; n < Chunk.Height; n++) {
+            if (!chunk.ActiveList[n]) continue;
             Section curSection = chunk.sectionsList[n];
 
             for (int i = 0; i < Section.Length; i++) {
@@ -48,7 +49,41 @@ public class WorldBuilder : Singleton<WorldBuilder>
                     {
                         CubeType curCube = curSection.cubes[i, j, k];
                         if (curCube == CubeType.Air) continue;
-                        //transform.GetComponent<MeshRenderer>().enabled = false;
+
+                        bool hasAir = false;
+
+                        for (int q = -1; q <= 1; q++) {
+                            for (int w = -1;w <= 1 ;w++ ) {
+                                for (int e = -1; e <= 1; e++) {
+                                    int f = Mathf.Abs(q) + Mathf.Abs(w) + Mathf.Abs(e);
+                                    if (f == 0 || f > 1) continue;
+                                    if (i + q < 0 || i + q >= Section.Length || 
+                                        j + w < 0 || j + w >= Section.Length || 
+                                        k + e < 0 || k + e >= Section.Length)
+                                    {
+                                        hasAir = true;
+                                        continue;
+                                    }
+                                    if (curSection.cubes[i+q, j+w, k+e] == CubeType.Air) {
+                                        hasAir = true;
+                                        break;
+                                    }
+                                }
+                                if (hasAir) break;
+                            }
+                            if (hasAir) break;
+                        } 
+
+                        Transform curTransform = null;
+                        curSection.cubeDatas.TryGetValue(i+","+j+","+k,out curTransform);
+                        if (curTransform != null)
+                        {
+                            curTransform.GetComponent<MeshRenderer>().enabled = hasAir;
+                        }
+                        else 
+                        {
+                            continue;
+                        }
                     }
                 }
             }
@@ -96,6 +131,7 @@ public class WorldBuilder : Singleton<WorldBuilder>
             sectionRoot.transform.SetParent(chunkRoot.transform);
             sectionRoot.name = "Section " + i;
             CubeType[,,] curCubeList = chunk.sectionsList[i].cubes;
+            Dictionary<string, Transform> curCubeDatas = chunk.sectionsList[i].cubeDatas;
             for (int y = 0; y < Section.Length; y++)
             {
                 GameObject planeRoot = new GameObject();
@@ -114,6 +150,7 @@ public class WorldBuilder : Singleton<WorldBuilder>
                         Transform curTransform = Instantiate(curObj).transform;
                         curTransform.position = new Vector3(curStart.x + x, curStart.y + y, curStart.z + z);
                         curTransform.SetParent(planeRoot.transform);
+                        curCubeDatas.Add(x+","+y+","+z, curTransform);
                     }
                 }
             }

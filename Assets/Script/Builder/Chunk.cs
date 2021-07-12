@@ -11,7 +11,7 @@ public class Section
     /// 分区方块数据
     /// </summary>
     public CubeType[,,] cubes = new CubeType[Length, Length, Length];
-    public Dictionary<string, BaseCube> cubeDatas = new Dictionary<string, BaseCube>();
+    public Dictionary<string, Transform> cubeDatas = new Dictionary<string, Transform>();
 
     /// <summary>
     /// 分区边长方块数
